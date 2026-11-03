@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\KnS.Protocol\KnS.Protocol.csproj" />
+    <ProjectReference Include="..\KnS.Data\KnS.Data.csproj" />
+    <ProjectReference Include="..\KnS.Game\KnS.Game.csproj" />
+    <ProjectReference Include="..\KnS.Platform\KnS.Platform.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The master-data seeds stay in server/seed (shared with the Python server) and ship next to the binaries. -->
+    <Content Include="..\..\..\server\seed\*.csv" LinkBase="seed" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The download page (Endpoints/DownloadPageEndpoint.cs). -->
+    <Content Include="Web\*.html;Web\*.jpg;Web\*.png" LinkBase="web" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

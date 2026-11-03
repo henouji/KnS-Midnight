@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Midnight</title>
+<link rel="icon" href="/icon.png">
+<style>
+  :root { color-scheme: dark; --bg: #0b0d17; --card: #151a2b; --line: #263050; --text: #e8ebf7; --dim: #8b94b3; --accent: #7c8cff; --bad: #ff6b7a; --ok: #5fd39a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 system-ui, sans-serif; background: var(--bg); color: var(--text); }
+  main { max-width: 980px; margin: 0 auto; padding: 24px 16px 60px; }
+  header { position: sticky; top: 0; z-index: 10; background: rgba(11, 13, 23, .92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  header .inner { max-width: 980px; margin: 0 auto; padding: 10px 16px; display: flex; gap: 14px; align-items: center; }
+  header .brand { display: flex; gap: 8px; align-items: center; color: var(--text); text-decoration: none; font-weight: 700; white-space: nowrap; }
+  header nav { display: none; flex: 1; gap: 4px; overflow-x: auto; }
+  header nav a { color: var(--dim); text-decoration: none; padding: 4px 10px; border-radius: 8px; white-space: nowrap; }
+  header nav a:hover { color: var(--text); background: #1c2340; }
+  header #out { display: none; margin-left: auto; }
+  header.in nav { display: flex; }
+  header.in #out { display: block; }
+  header nav a.on { color: var(--text); background: #2a3358; }
+  .tab { display: none; }
+  .tab.on { display: block; }
+  main { padding-top: 20px; }
+  h2 { font-size: 1.05rem; margin: 28px 0 8px; }
+  section, .bar { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .bar, form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  input { background: #0e1220; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font: inherit; min-width: 0; }
+  input.grow { flex: 1; min-width: 140px; }
+  button { background: var(--accent); color: #0b0d17; border: 0; border-radius: 8px; padding: 8px 12px; font: inherit; font-weight: 600; cursor: pointer; }
+  button.sec { background: #2a3358; color: var(--text); }
+  button.bad { background: var(--bad); }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th, td { text-align: left; padding: 7px 6px; border-top: 1px solid var(--line); vertical-align: middle; }
+  th { color: var(--dim); font-weight: 500; font-size: .8rem; border-top: 0; }
+  td.act { white-space: nowrap; text-align: right; }
+  .tag { font-size: .75rem; padding: 2px 8px; border-radius: 99px; background: #2a3358; }
+  .tag.ok { color: var(--ok); } .tag.bad { color: var(--bad); }
+  .dim { color: var(--dim); }
+  #msg { min-height: 1.4em; margin: 10px 0 0; }
+  #app { display: none; }
+  .scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+<header id="top">
+  <div class="inner">
+    <a class="brand" href="/admin"><img src="/icon.png" alt="" width="28" height="28"><span>Midnight Admin</span></a>
+    <nav id="nav">
+      <a href="#requests">Sign-ups</a>
+      <a href="#testers">Testers</a>
+      <a href="#refused">Refused</a>
+      <a href="#users">Users</a>
+      <a href="#flags">Flags</a>
+    </nav>
+    <button id="out" class="sec" type="button">Sign out</button>
+  </div>
+</header>
+<main>
+  <div class="bar" id="login">
+    <input id="key" class="grow" type="password" placeholder="Admin key" autocomplete="current-password">
+    <button id="go">Sign in</button>
+  </div>
+  <p id="msg" class="dim"></p>
+
+  <div id="app">
+    <div class="tab" id="tab-requests">
+    <h2>Sign-up requests <span class="dim">(from the public page)</span></h2>
+    <section class="scroll"><table><thead><tr><th>Email</th><th>Device id</th><th>Note</th><th>Sent</th><th></th></tr></thead><tbody id="requests"></tbody></table></section>
+    </div>
+
+    <div class="tab" id="tab-testers">
+    <h2>Add tester</h2>
+    <section><form id="add">
+      <input id="email" class="grow" type="email" placeholder="email" required>
+      <input id="note" class="grow" placeholder="note (optional)">
+      <input id="dev" placeholder="device id (optional)">
+      <button>Add</button>
+    </form></section>
+
+    <h2>Testers</h2>
+    <section class="scroll"><table><thead><tr><th>Email</th><th>Device id</th><th>Note</th><th>Status</th><th></th></tr></thead><tbody id="testers"></tbody></table></section>
+    </div>
+
+    <div class="tab" id="tab-refused">
+    <h2>Refused devices <span class="dim">(tried to play without access)</span></h2>
+    <section class="scroll"><table><thead><tr><th>Device id</th><th>User no</th><th>Attempts</th><th>Last seen</th><th></th></tr></thead><tbody id="refused"></tbody></table></section>
+    </div>
+
+    <div class="tab" id="tab-users">
+    <h2>Users</h2>
+    <section class="scroll">
+      <input id="usearch" class="grow" placeholder="Search user no, nickname or device id" autocomplete="off">
+      <table><thead><tr><th>User no</th><th>Nickname</th><th>Lv</th><th>Gold</th><th>Gems</th><th>Devices</th><th></th></tr></thead><tbody id="accounts"></tbody></table>
+    </section>
+
+    <section id="detail" hidden>
+      <h2 id="dtitle" style="margin-top:0"></h2>
+      <p id="dinfo" class="dim"></p>
+      <h2>Devices</h2>
+      <table><thead><tr><th>Device id</th><th>Kind</th><th>Tester</th><th></th></tr></thead><tbody id="ddevices"></tbody></table>
+      <form id="dlink" style="margin-top:8px">
+        <input id="dnew" class="grow" placeholder="link another device id to this user" required>
+        <button>Link device</button>
+      </form>
+      <h2>Wallet</h2>
+      <form id="dwallet">
+        <label class="dim">Gold <input id="dgold" type="number" min="0" max="999999999" required></label>
+        <label class="dim">Gems <input id="dgems" type="number" min="0" max="999999999" required></label>
+        <button>Save</button>
+      </form>
+    </section>
+
+    <h2>Device links <span class="dim">(devices playing someone else's account)</span></h2>
+    <section><form id="link">
+      <input id="ldev" class="grow" placeholder="new device id" required>
+      <input id="luser" type="number" min="1" placeholder="user no" required>
+      <button>Link</button>
+    </form>
+    <table><thead><tr><th>Linked device</th><th>User no</th><th>Linked</th><th></th></tr></thead><tbody id="links"></tbody></table></section>
+    </div>
+
+    <div class="tab" id="tab-flags">
+    <h2>Feature flags</h2>
+    <section class="scroll"><table><thead><tr><th>Flag</th><th>Updated</th><th></th></tr></thead><tbody id="flags"></tbody></table></section>
+    </div>
+  </div>
+</main>
+<script>
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  let key = sessionStorage.getItem('kns_admin') || '';
+  let testers = [];
+  let data = { accounts: [], links: [] };
+  let selected = 0;
+
+  // A user's devices: the one it registered with plus every linked one.
+  const devicesOf = u => [{ id: u.device_id, kind: 'original' }, ...data.links.filter(l => l.user_no === u.user_no).map(l => ({ id: l.device_id, kind: 'linked' }))].filter(d => d.id);
+  const testerOf = id => testers.find(t => t.device_id === id);
+
+  function renderUsers() {
+    const q = $('usearch').value.trim().toLowerCase();
+    const shown = data.accounts.filter(u => !q || String(u.user_no).includes(q) || (u.nickname || '').toLowerCase().includes(q)
+      || devicesOf(u).some(d => d.id.toLowerCase().includes(q)));
+    $('accounts').innerHTML = shown.map(u => `<tr>
+      <td>${esc(u.user_no)}</td><td>${esc(u.nickname)}</td><td>${esc(u.level)}</td><td>${esc(u.gold)}</td><td>${esc(u.gems)}</td>
+      <td class="dim">${devicesOf(u).length}</td>
+      <td class="act"><button class="${u.user_no === selected ? '' : 'sec'}" data-do="manage" data-user="${esc(u.user_no)}">Manage</button></td></tr>`).join('')
+      || '<tr><td colspan="7" class="dim">No users.</td></tr>';
+
+    const u = data.accounts.find(x => x.user_no === selected);
+    $('detail').hidden = !u;
+    if (!u) return;
+    $('dtitle').textContent = `User ${u.user_no}${u.nickname ? ' · ' + u.nickname : ''}`;
+    $('dinfo').textContent = `Level ${u.level} · created ${u.created}`;
+    $('ddevices').innerHTML = devicesOf(u).map(d => {
+      const t = testerOf(d.id);
+      return `<tr><td>${esc(d.id)}</td><td class="dim">${d.kind}</td>
+        <td>${t ? `<span class="tag ${t.revoked ? 'bad' : 'ok'}">${esc(t.email)}${t.revoked ? ' (revoked)' : ''}</span>` : '<span class="dim">not a tester</span>'}</td>
+        <td class="act">${d.kind === 'linked' ? `<button class="bad" data-do="unlink" data-device="${esc(d.id)}">Unlink</button>` : ''}</td></tr>`;
+    }).join('') || '<tr><td colspan="4" class="dim">No devices.</td></tr>';
+    // Keep what the owner is typing; only fill the wallet when a different user is opened.
+    if ($('dwallet').dataset.user !== String(u.user_no)) {
+      $('dwallet').dataset.user = u.user_no;
+      $('dgold').value = u.gold;
+      $('dgems').value = u.gems;
+    }
+  }
+
+  // One panel at a time; the tab lives in the URL hash so a reload stays on it.
+  const tabs = ['requests', 'testers', 'refused', 'users', 'flags'];
+  function showTab() {
+    const name = tabs.includes(location.hash.slice(1)) ? location.hash.slice(1) : tabs[0];
+    tabs.forEach(t => $('tab-' + t).classList.toggle('on', t === name));
+    document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.hash === '#' + name));
+  }
+  window.addEventListener('hashchange', showTab);
+  showTab();
+
+  function say(text, bad) { $('msg').textContent = text; $('msg').style.color = bad ? 'var(--bad)' : 'var(--dim)'; }
+
+  async function api(path, body) {
+    const res = await fetch(path, {
+      method: body ? 'POST' : 'GET',
+      headers: { 'X-Admin-Key': key, 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || res.statusText);
+    return data;
+  }
+
+  async function refresh() {
+    try {
+      const [t, f, a] = await Promise.all([api('/admin/testers'), api('/admin/flags'), api('/admin/accounts')]);
+      sessionStorage.setItem('kns_admin', key);
+      $('login').style.display = 'none';
+      $('app').style.display = 'block';
+      $('top').classList.add('in');
+      testers = t.testers;
+      $('testers').innerHTML = t.testers.map(x => `<tr>
+        <td>${esc(x.email)}</td>
+        <td>${x.device_id ? esc(x.device_id) : '<span class="dim">none</span>'}</td>
+        <td class="dim">${esc(x.note)}</td>
+        <td><span class="tag ${x.revoked ? 'bad' : 'ok'}">${x.revoked ? 'revoked' : 'active'}</span></td>
+        <td class="act"><button class="sec" data-do="attach" data-email="${esc(x.email)}">Set device</button>
+          <button class="${x.revoked ? 'sec' : 'bad'}" data-do="${x.revoked ? 'restore' : 'revoke'}" data-email="${esc(x.email)}">${x.revoked ? 'Restore' : 'Revoke'}</button></td></tr>`).join('')
+        || '<tr><td colspan="5" class="dim">No testers yet.</td></tr>';
+      $('requests').innerHTML = (t.requests || []).map(x => `<tr>
+        <td>${esc(x.email)}</td><td>${esc(x.device_id)}</td><td class="dim">${esc(x.note)}</td><td class="dim">${esc(x.created)}</td>
+        <td class="act"><button data-do="approve" data-email="${esc(x.email)}" data-device="${esc(x.device_id)}">Approve</button>
+          <button class="sec" data-do="dismiss" data-email="${esc(x.email)}">Dismiss</button></td></tr>`).join('')
+        || '<tr><td colspan="5" class="dim">No requests.</td></tr>';
+      $('refused').innerHTML = t.refused.map(x => `<tr>
+        <td>${esc(x.device_id)}</td><td>${esc(x.user_no)}</td><td>${esc(x.attempts)}</td><td class="dim">${esc(x.last_seen)}</td>
+        <td class="act"><button class="sec" data-do="pick" data-device="${esc(x.device_id)}">Use in form</button></td></tr>`).join('')
+        || '<tr><td colspan="5" class="dim">None.</td></tr>';
+      $('flags').innerHTML = f.flags.map(x => `<tr>
+        <td>${esc(x.feature_key)}</td><td class="dim">${esc(x.update_date)}</td>
+        <td class="act"><button class="${x.enabled ? '' : 'sec'}" data-do="flag" data-flag="${esc(x.feature_key)}" data-on="${x.enabled}">${x.enabled ? 'On' : 'Off'}</button></td></tr>`).join('')
+        || '<tr><td colspan="3" class="dim">No flags.</td></tr>';
+      $('links').innerHTML = a.links.map(x => `<tr>
+        <td>${esc(x.device_id)}</td><td>${esc(x.user_no)}</td><td class="dim">${esc(x.created)}</td>
+        <td class="act"><button class="bad" data-do="unlink" data-device="${esc(x.device_id)}">Unlink</button></td></tr>`).join('')
+        || '<tr><td colspan="4" class="dim">None.</td></tr>';
+      data = a;
+      renderUsers();
+      say('');
+    } catch (e) {
+      sessionStorage.removeItem('kns_admin');
+      $('login').style.display = 'flex';
+      $('app').style.display = 'none';
+      $('top').classList.remove('in');
+      say(e.message, true);
+    }
+  }
+
+  async function run(fn) { try { await fn(); await refresh(); } catch (e) { say(e.message, true); } }
+
+  $('out').onclick = () => { key = ''; sessionStorage.removeItem('kns_admin'); location.reload(); };
+  $('go').onclick = () => { key = $('key').value; refresh(); };
+  $('key').onkeydown = e => { if (e.key === 'Enter') $('go').click(); };
+
+  $('add').onsubmit = e => {
+    e.preventDefault();
+    const email = $('email').value.trim().toLowerCase(), dev = $('dev').value.trim();
+    run(async () => {
+      await api('/admin/testers', { email, note: $('note').value });
+      if (dev) await api('/admin/testers/attach', { email, device_id: dev });
+      $('add').reset();
+    });
+  };
+
+  $('usearch').oninput = renderUsers;
+
+  $('dlink').onsubmit = e => {
+    e.preventDefault();
+    run(async () => { await api('/admin/accounts/link', { device_id: $('dnew').value.trim(), user_no: selected }); $('dlink').reset(); });
+  };
+
+  $('dwallet').onsubmit = e => {
+    e.preventDefault();
+    const u = data.accounts.find(x => x.user_no === selected);
+    if (!u || !confirm(`Set user ${u.user_no} to ${$('dgold').value} gold and ${$('dgems').value} gems?`)) return;
+    run(async () => {
+      await api('/admin/accounts/wallet', { user_no: selected, gold: $('dgold').value, gems: $('dgems').value });
+      $('dwallet').dataset.user = '';
+      say('Wallet saved.');
+    });
+  };
+
+  $('link').onsubmit = e => {
+    e.preventDefault();
+    run(async () => {
+      await api('/admin/accounts/link', { device_id: $('ldev').value.trim(), user_no: $('luser').value.trim() });
+      $('link').reset();
+    });
+  };
+
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button[data-do]');
+    if (!b) return;
+    const d = b.dataset;
+    if (d.do === 'manage') { selected = Number(d.user); $('dwallet').dataset.user = ''; renderUsers(); $('detail').scrollIntoView({ behavior: 'smooth' }); }
+    else if (d.do === 'unlink') { if (confirm('Unlink ' + d.device + '?')) run(() => api('/admin/accounts/unlink', { device_id: d.device })); }
+    else if (d.do === 'pick') { $('dev').value = d.device; $('ldev').value = d.device; location.hash = '#testers'; $('email').focus(); say('Device id copied: add it as a tester here, or link it to an old account in the Users tab.'); }
+    else if (d.do === 'attach') {
+      const device_id = prompt('Device id for ' + d.email);
+      if (device_id) run(() => api('/admin/testers/attach', { email: d.email, device_id }));
+    }
+    else if (d.do === 'flag') run(() => api('/admin/flags', { feature_key: d.flag, enabled: d.on !== 'true' }));
+    else if (d.do === 'approve') {
+      // A request without a device id: pick one from the refused devices list.
+      const req = d.device ? d.device : prompt('Device id for ' + d.email + ' (see Refused devices, match the time in the note)');
+      if (req) run(() => api('/admin/testers/approve', { email: d.email, device_id: req }));
+    }
+    else if (d.do === 'dismiss') run(() => api('/admin/testers/dismiss', { email: d.email }));
+    else if (d.do === 'revoke' && !confirm('Revoke ' + d.email + '?')) return;
+    else if (d.do === 'revoke' || d.do === 'restore') run(() => api('/admin/testers/' + d.do, { email: d.email }));
+  });
+
+  if (key) refresh();
+</script>
+</body>
+</html>

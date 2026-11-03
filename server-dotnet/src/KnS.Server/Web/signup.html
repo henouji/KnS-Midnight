@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign up: Knights N Squires: Reloaded</title>
+<link rel="icon" href="/icon.png">
+<style>
+  :root { color-scheme: dark; --bg: #0b0d17; --card: #151a2bdd; --line: #263050; --text: #e8ebf7; --dim: #aab2cf; --accent: #7c8cff; --ok: #5fd39a; --bad: #ff6b7a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; font: 16px/1.6 system-ui, sans-serif; color: var(--text); background: var(--bg);
+    background-image: linear-gradient(180deg, #0b0d17aa 0%, #0b0d17d9 45%, #0b0d17f2 100%), url(/banner.jpg);
+    background-size: cover; background-position: center top; background-attachment: fixed; }
+  main { max-width: 520px; margin: 0 auto; padding: 60px 20px 60px; }
+  .top { text-align: center; text-shadow: 0 2px 12px #000a; }
+  .top img { width: 80px; height: 80px; filter: drop-shadow(0 6px 14px #000a); }
+  h1 { margin: 8px 0 4px; font-size: 1.8rem; }
+  .top p { margin: 0 0 24px; color: var(--dim); }
+  form, .done { background: var(--card); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  label { display: block; font-weight: 600; margin: 14px 0 4px; }
+  label:first-child { margin-top: 0; }
+  small { display: block; color: var(--dim); margin-top: 4px; }
+  input { width: 100%; background: #0e1220; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: inherit; }
+  input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  button { margin-top: 20px; width: 100%; background: var(--accent); color: #0b0d17; border: 0; border-radius: 9px; padding: 12px; font: inherit; font-weight: 700; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: default; }
+  #err { color: var(--bad); min-height: 1.4em; margin: 12px 0 0; }
+  .done { display: none; text-align: center; }
+  .done b { color: var(--ok); font-size: 1.2rem; }
+  a { color: var(--accent); }
+  .back { text-align: center; margin-top: 18px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <img src="/icon.png" alt="">
+    <h1>Sign up for testing</h1>
+    <p>Send your email and the time you tried to play. I approve your device, then you can play.</p>
+  </div>
+
+  <form id="form">
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" maxlength="200" required placeholder="you@example.com">
+    <small>Only used to tell testers apart.</small>
+
+    <label for="note">When did you tap Guest Play?</label>
+    <input id="note" maxlength="200" required placeholder="e.g. today 21:40, Galaxy Tab S8, Android 16">
+    <small>Open the game and tap <b>Guest Play</b> (an error popup is expected), then enter the time here. I use it to find your device.</small>
+
+    <label for="device">Device ID <span style="font-weight:400;color:var(--dim)">(only if the game showed one)</span></label>
+    <input id="device" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="64" placeholder="leave empty if unsure">
+
+    <button id="send">Send request</button>
+    <p id="err"></p>
+  </form>
+
+  <div class="done" id="done">
+    <p><b>Request sent.</b></p>
+    <p>Once I approve your device, close the game fully, open it again and tap <b>Guest Play</b>.</p>
+  </div>
+  <p class="back"><a href="/">Back to downloads and the install guide</a> · <a href="https://discord.gg/WGPGnaTyV" target="_blank" rel="noopener">Discord</a></p>
+</main>
+<script>
+  const $ = id => document.getElementById(id);
+  // A link like /signup?device=123 pre-fills the Device ID.
+  const preset = new URLSearchParams(location.search).get('device');
+  if (preset) $('device').value = preset;
+
+  $('form').onsubmit = async e => {
+    e.preventDefault();
+    $('send').disabled = true; $('err').textContent = '';
+    try {
+      const res = await fetch('/signup', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: $('email').value, device_id: $('device').value, note: $('note').value }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Something went wrong, try again.');
+      $('form').style.display = 'none'; $('done').style.display = 'block';
+    } catch (err) { $('err').textContent = err.message; $('send').disabled = false; }
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+price_name,price_type,price_item_id,price
+StaminaRecovery,Cash,1900009,5
+StaminaRefreshTime,Second,0,300
+PvpRecovery,Cash,1900009,5
+PvpRefreshTime,Second,0,1800
+PvpRefreshCash,Cash,1900009,5
+InventoryBuyableMaxCount,,0,40
+InventoryAddSpace,,0,3
+Continue,Cash,1900009,5
+FellowInventoryBuyableMaxCount,,0,60
+FellowInventoryAddSpace,,0,3

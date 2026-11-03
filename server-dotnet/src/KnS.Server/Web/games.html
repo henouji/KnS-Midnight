@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knights N Squires Midnight</title>
+<meta name="description" content="Android tester builds of Knights N Squires: Reloaded.">
+<link rel="icon" href="/icon.png">
+<style>
+  :root { color-scheme: dark; --bg: #0b0f19; --panel: #111936cc; --panel2: #0e1530; --line: #ffffff1a; --text: #e8ecfa; --dim: #9aa5c8;
+    --cyan: #3de0ff; --indigo: #7c8cff; --warn: #e0b36a; --ok: #4ade9a; --bad: #ff6b7a; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  /* The banner is the page background; the gradient on top keeps the text readable. */
+  body { margin: 0; min-height: 100vh; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--text); background: var(--bg);
+    background-image: linear-gradient(180deg, #0b0f19aa 0%, #0b0f19d9 40%, #0b0f19f4 100%), url(/banner.jpg);
+    background-size: cover; background-position: center top; background-attachment: fixed; }
+  svg { width: 1.1em; height: 1.1em; vertical-align: -.18em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  nav { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 6px; padding: 10px 20px; background: #0b0f19cc; backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  nav .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; margin-right: auto; color: var(--text); text-decoration: none; }
+  nav .brand img { width: 30px; height: 30px; }
+  nav a.l { color: var(--dim); text-decoration: none; font-size: .9rem; padding: 6px 10px; border-radius: 8px; }
+  nav a.l:hover { color: var(--text); background: #ffffff10; }
+  nav a.cta { margin-left: 6px; padding: 7px 14px; border-radius: 9px; font-size: .9rem; font-weight: 600; text-decoration: none; color: #06101c; background: linear-gradient(135deg, var(--cyan), var(--indigo)); }
+  @media (max-width: 720px) { nav a.l { display: none; } }
+
+  main { max-width: 900px; margin: 0 auto; padding: 0 20px 70px; }
+  .hero { text-align: center; padding: 84px 0 36px; text-shadow: 0 2px 14px #000a; }
+  .hero img { width: 92px; height: 92px; filter: drop-shadow(0 6px 16px #000b); }
+  h1 { margin: 10px 0 4px; font-size: clamp(2.2rem, 7vw, 3.4rem); letter-spacing: .02em; line-height: 1.1;
+    background: linear-gradient(135deg, #fff 20%, var(--cyan) 60%, var(--indigo)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+  .tag { margin: 0 0 20px; color: var(--dim); font-size: 1.1rem; letter-spacing: .08em; text-transform: uppercase; }
+  .badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 26px; }
+  .badge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 99px; background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(8px); font-size: .88rem; color: var(--dim); text-shadow: none; }
+  .badge b { color: var(--text); font-weight: 600; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--dim); display: inline-block; }
+  .dot.on { background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+  .dot.off { background: var(--bad); box-shadow: 0 0 10px var(--bad); }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 0; cursor: pointer; font: inherit; font-weight: 700; text-decoration: none;
+    padding: 14px 30px; border-radius: 12px; color: #06101c; background: linear-gradient(135deg, var(--cyan), var(--indigo)); box-shadow: 0 0 24px #3de0ff55, 0 0 60px #7c8cff33; transition: transform .15s, box-shadow .15s; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 0 34px #3de0ff88, 0 0 80px #7c8cff55; }
+  .btn.sec { background: #ffffff12; color: var(--text); box-shadow: none; border: 1px solid var(--line); padding: 10px 18px; font-weight: 600; }
+  .btn.sec:hover { background: #ffffff1f; box-shadow: none; }
+  .btn.big { font-size: 1.15rem; padding: 16px 38px; }
+  .hint { margin: 12px 0 0; font-size: .85rem; color: var(--dim); }
+
+  section { padding: 34px 0 6px; }
+  h2 { margin: 0 0 6px; font-size: 1.55rem; }
+  .sub { margin: 0 0 16px; color: var(--dim); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; backdrop-filter: blur(10px); }
+  .panel p { margin: 8px 0; }
+  .panel ul { margin: 8px 0; padding-left: 22px; }
+  .panel li { margin: 6px 0; }
+  a { color: var(--cyan); }
+  code, pre { font-family: ui-monospace, Consolas, monospace; background: #060a16; border: 1px solid var(--line); border-radius: 7px; }
+  code { padding: 1px 6px; font-size: .88em; }
+  pre { padding: 10px 12px; overflow-x: auto; margin: 8px 0; }
+
+  .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+  .card { display: flex; flex-direction: column; gap: 10px; transition: transform .15s, border-color .15s; }
+  .card:hover { transform: translateY(-3px); border-color: #3de0ff66; }
+  .card h3 { margin: 0; font-size: 1.1rem; }
+  .meta { color: var(--dim); font-size: .85rem; }
+  .card p { color: var(--dim); flex: 1; margin: 0; }
+  .note { font-size: .8rem; color: var(--warn); }
+  .copyrow { display: flex; gap: 8px; margin-top: 14px; }
+  .copyrow input { flex: 1; min-width: 0; background: #060a16; color: var(--dim); border: 1px solid var(--line); border-radius: 9px; padding: 9px 12px; font: .85rem ui-monospace, Consolas, monospace; }
+
+  .progress { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .bar { flex: 1; height: 8px; border-radius: 99px; background: #ffffff14; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--indigo)); transition: width .4s; }
+  #count { font-weight: 700; white-space: nowrap; }
+  .step { display: flex; gap: 14px; padding: 16px 0; border-top: 1px solid var(--line); }
+  .step:first-of-type { border-top: 0; }
+  .step .n { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; border: 2px solid var(--indigo); color: var(--indigo); cursor: pointer; background: none; font: inherit; font-weight: 700; padding: 0; }
+  .step.done .n { background: linear-gradient(135deg, var(--cyan), var(--indigo)); border-color: transparent; color: #06101c; }
+  .step.done h3 { color: var(--dim); text-decoration: line-through; text-decoration-color: #ffffff40; }
+  .step h3 { margin: 4px 0 4px; font-size: 1.05rem; }
+  .step > div { flex: 1; min-width: 0; }
+  .step ol { padding-left: 22px; list-style: decimal; }
+
+  .tablewrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 520px; }
+  th, td { text-align: left; padding: 11px 12px; border-top: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--dim); font-weight: 500; font-size: .82rem; text-transform: uppercase; letter-spacing: .06em; border-top: 0; }
+  th:nth-child(2) { color: var(--cyan); }
+  td:first-child { color: var(--dim); white-space: nowrap; }
+
+  details { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; backdrop-filter: blur(10px); }
+  summary { cursor: pointer; padding: 14px 18px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+  summary::-webkit-details-marker { display: none; }
+  summary svg { flex: none; transition: transform .2s; color: var(--cyan); }
+  details[open] summary svg { transform: rotate(180deg); }
+  details[open] { border-color: #3de0ff44; }
+  details > div { padding: 0 18px 16px; color: var(--dim); }
+
+  footer { border-top: 1px solid var(--line); background: #060a16cc; backdrop-filter: blur(8px); padding: 28px 20px 40px; text-align: center; color: var(--dim); font-size: .85rem; }
+  footer .links { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+  footer p { max-width: 640px; margin: 8px auto; }
+
+  .modal { position: fixed; inset: 0; z-index: 20; display: none; place-items: center; background: #000a; backdrop-filter: blur(4px); padding: 20px; }
+  .modal.open { display: grid; }
+  .modal .panel { max-width: 440px; width: 100%; background: #0e1530f2; }
+  .modal h3 { margin: 0 0 8px; }
+  .modal .row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s, transform .6s; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 20h16"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-disk" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1"/></symbol>
+</svg>
+
+<nav>
+  <a class="brand" href="#top"><img src="/icon.png" alt="">KNS Midnight</a>
+  <a class="l" href="#download">Download</a><a class="l" href="#install">Install</a><a class="l" href="#compat">Compatibility</a><a class="l" href="#faq">FAQ</a><a class="l" href="https://discord.gg/WGPGnaTyV" target="_blank" rel="noopener">Discord</a>
+  <a class="cta" href="/signup">Sign up</a>
+</nav>
+
+<main id="top">
+  <div class="hero">
+    <img src="/icon.png" alt="">
+    <h1>KNS Midnight</h1>
+    <p class="tag">Survive the Darkness</p>
+    <div class="badges">
+      <span class="badge"><svg><use href="#i-tag"/></svg>Version <b id="b-ver">tester</b></span>
+      <span class="badge"><svg><use href="#i-phone"/></svg>OS <b>Android (32-bit ARM)</b></span>
+      <span class="badge"><svg><use href="#i-disk"/></svg>Size <b id="b-size">...</b></span>
+      <span class="badge"><span class="dot" id="b-dot"></span>Server <b id="b-status">checking</b></span>
+    </div>
+    <button class="btn big" id="hero-dl"><svg><use href="#i-dl"/></svg>Download APK</button>
+    <p class="hint">Knights N Squires tester build. You need an approved device to play.</p>
+  </div>
+
+  <section id="download" class="reveal">
+    <h2>Download</h2>
+    <p class="sub">Open the file on your device to install it.</p>
+    <div id="games" class="grid"><p class="sub">Loading...</p></div>
+    <div class="panel" style="margin-top:18px">
+      <b>Download from another device or share the link</b>
+      <p class="sub" style="margin:4px 0 0">Copy the direct link, then paste it into your phone's browser.</p>
+      <div class="copyrow"><input id="direct" readonly><button class="btn sec" id="copy-link"><svg><use href="#i-copy"/></svg><span>Copy</span></button></div>
+    </div>
+  </section>
+
+  <section id="install" class="reveal">
+    <h2>Installation guide</h2>
+    <p class="sub">The original game's servers are gone, so this is a patched copy that talks to a private revival server. It is unofficial, for testing only, and may have bugs. Please don't share the APK.</p>
+    <div class="panel">
+      <div class="progress"><span id="count">Step 0 of 4</span><div class="bar"><i id="fill"></i></div></div>
+
+      <div class="step" data-step="1"><button class="n" aria-label="Mark step 1 done">1</button><div>
+        <h3>Download the APK</h3>
+        <p>Use the download button above. You need about <b>1 GB free storage</b>. If you have an older copy of the game from me installed, <b>uninstall it first</b>: your progress is saved on the server, not on the device.</p>
+      </div></div>
+
+      <div class="step" data-step="2"><button class="n" aria-label="Mark step 2 done">2</button><div>
+        <h3>Install it</h3>
+        <ul>
+          <li><b>Android 13 or older:</b> open the file and allow "install unknown apps" when asked.</li>
+          <li><b>Android 14 or newer:</b> Android refuses apps this old, so the install has to bypass the low target SDK block. Pick one option.
+            <ul>
+              <li><b>Option A, from a PC with <code>adb</code>:</b>
+                <ol>
+                  <li>On the device: Settings, About, tap <b>Build number</b> 7 times, then Settings, Developer options, turn on <b>USB debugging</b> and connect the USB cable.</li>
+                  <li>On the PC, with <a href="https://developer.android.com/tools/releases/platform-tools">Android platform-tools</a> installed:
+<pre>adb install -r --bypass-low-target-sdk-block kns.apk</pre>
+                    (replace <code>kns.apk</code> with the file name).</li>
+                </ol>
+              </li>
+              <li><b>Option B, on the device itself (no PC):</b>
+                <ol>
+                  <li>Install <b>Shizuku</b> from the <a href="https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api" target="_blank" rel="noopener">Play Store</a> and start it, following the steps inside the app (it uses Wireless debugging).</li>
+                  <li>Download <b>InstallWithOptions</b> from its <a href="https://github.com/zacharee/InstallWithOptions/releases" target="_blank" rel="noopener">GitHub releases</a> and install it.</li>
+                  <li>Open InstallWithOptions, allow it to use Shizuku, choose the downloaded APK, turn on the option that bypasses the low target SDK block, and install.</li>
+                </ol>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div></div>
+
+      <div class="step" data-step="3"><button class="n" aria-label="Mark step 3 done">3</button><div>
+        <h3>First launch</h3>
+        <p>A permissions screen appears. Tap <b>Continue</b>, then open the game again. Play Protect may warn about an unknown app; choose to install anyway.</p>
+      </div></div>
+
+      <div class="step" data-step="4"><button class="n" aria-label="Mark step 4 done">4</button><div>
+        <h3>Get access</h3>
+        <p>The server only lets in people I have approved.</p>
+        <ul>
+          <li>Open the game and tap <b>Guest Play</b>. You will get an <b>error popup</b>. That is expected.</li>
+          <li><a href="/signup"><b>Sign up</b></a> with the <b>email</b> you want me to use and the <b>time you tried</b> (that is how I find your device), or message me both. I approve your device on the server.</li>
+          <li>Tap <b>Guest Play</b> again. You should be in.</li>
+        </ul>
+        <a class="btn sec" href="/signup" style="margin-top:6px">Go to sign up</a>
+      </div></div>
+    </div>
+  </section>
+
+  <section id="compat" class="reveal">
+    <h2>Compatibility</h2>
+    <p class="sub">What each build runs on.</p>
+    <div class="panel tablewrap"><table>
+      <thead><tr><th></th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td>Processor</td><td>Can run 32-bit apps (32-bit ARM)</td></tr>
+        <tr><td>Android</td><td>13 or older installs directly; 14 or newer needs the low target SDK bypass (<code>adb</code>, or InstallWithOptions with Shizuku)</td></tr>
+        <tr><td>Storage</td><td>About 1 GB free (the APK is 356 MB)</td></tr>
+        <tr><td>Known working</td><td>Galaxy Tab S8 (Android 16), Galaxy S8</td></tr>
+        <tr><td>Will not run on</td><td>64-bit only chips (Snapdragon 8 Gen 2 or newer, Pixel 7 or newer)</td></tr>
+        <tr><td>Access</td><td>Approved testers only, by device</td></tr>
+      </tbody>
+    </table></div>
+    <p class="hint">Not sure? Send me your <b>device model and Android version</b> first.</p>
+  </section>
+
+  <section id="faq" class="reveal">
+    <h2>Troubleshooting &amp; FAQ</h2>
+    <details><summary>Install fails with "not compatible" or "app not installed"<svg><use href="#i-chev"/></svg></summary><div>Your device may be 64-bit only, or you skipped the low target SDK bypass (<code>adb</code> or InstallWithOptions) on Android 14 or newer. Tell me the exact message.</div></details>
+    <details><summary>I get an error popup when I tap Guest Play<svg><use href="#i-chev"/></svg></summary><div>That is expected before approval. <a href="/signup">Sign up</a> with your email and the time you tried. After I approve you, close the game fully, open it again and tap Guest Play.</div></details>
+    <details><summary>Play Protect warns about an unknown app<svg><use href="#i-chev"/></svg></summary><div>The app is not from the Play Store, so Android warns. Choose to install anyway.</div></details>
+    <details><summary>I was approved but still see the error popup<svg><use href="#i-chev"/></svg></summary><div>Close the game fully (swipe it away from recent apps) and open it again.</div></details>
+    <details><summary>The game crashes or freezes<svg><use href="#i-chev"/></svg></summary><div>Tell me what you did just before, and your device model.</div></details>
+    <details><summary>Will I keep my progress?<svg><use href="#i-chev"/></svg></summary><div>Progress is saved on the test server, not on your device, so reinstalling is fine. It belongs to this test server and may be wiped.</div></details>
+  </section>
+
+  <section id="community" class="reveal">
+    <h2>Community</h2>
+    <div class="panel" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px"><b>Join the Discord</b>
+        <p class="sub" style="margin:4px 0 0">Ask for help, report bugs, share feedback and meet other players.</p></div>
+      <a class="btn" href="https://discord.gg/WGPGnaTyV" target="_blank" rel="noopener">Join Discord</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="links"><a href="#download">Download</a><a href="/signup">Sign up</a><a href="#faq">FAQ</a><a href="https://discord.gg/WGPGnaTyV" target="_blank" rel="noopener">Discord</a></div>
+  <p><span class="dot" id="f-dot"></span> Server <span id="f-status">checking</span></p>
+  <p>Unofficial fan revival for testing, not affiliated with the original publisher. Access to the game server is limited to approved testers. Please don't share the APK.</p>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="panel">
+    <h3 id="m-title">Download started</h3>
+    <p class="sub" style="margin:0">Your browser is downloading <b id="m-file"></b>. Watch its progress in your browser's download list or notifications.</p>
+    <p class="sub">When it finishes, open the file to install it. Next steps are in the guide below.</p>
+    <div class="row"><a class="btn sec" href="#install" id="m-guide">Installation guide</a><button class="btn" id="m-close">Got it</button></div>
+  </div>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const mb = n => n >= 1073741824 ? (n / 1073741824).toFixed(1) + ' GB' : (n / 1048576).toFixed(0) + ' MB';
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let main = null;
+
+  function startDownload(g) {
+    const a = document.createElement('a'); a.href = g.url; a.download = ''; document.body.appendChild(a); a.click(); a.remove();
+    $('m-file').textContent = g.file; $('modal').classList.add('open');
+  }
+
+  fetch('/games.json').then(r => r.json()).then(games => {
+    if (!games.length) { $('games').innerHTML = '<p class="sub">Nothing to download yet.</p>'; $('hero-dl').disabled = true; return; }
+    main = games[0];
+    $('b-ver').textContent = main.version || 'tester'; $('b-size').textContent = mb(main.size);
+    $('direct').value = location.origin + main.url;
+    $('games').innerHTML = games.map((g, i) => `
+      <article class="panel card">
+        <h3>${esc(g.title)}</h3>
+        <div class="meta">${g.version ? 'v' + esc(g.version) + ' · ' : ''}${mb(g.size)} · Android</div>
+        <p>${esc(g.description)}</p>
+        ${g.note ? `<div class="note">${esc(g.note)}</div>` : ''}
+        <button class="btn" data-i="${i}"><svg><use href="#i-dl"/></svg>Download APK</button>
+      </article>`).join('');
+    $('games').onclick = e => { const b = e.target.closest('button[data-i]'); if (b) startDownload(games[+b.dataset.i]); };
+  }).catch(() => { $('games').innerHTML = '<p class="sub">Could not load the list.</p>'; });
+
+  $('hero-dl').onclick = () => main ? startDownload(main) : $('download').scrollIntoView();
+  $('m-close').onclick = () => $('modal').classList.remove('open');
+  $('m-guide').onclick = () => $('modal').classList.remove('open');
+  $('modal').onclick = e => { if (e.target === $('modal')) $('modal').classList.remove('open'); };
+  document.onkeydown = e => { if (e.key === 'Escape') $('modal').classList.remove('open'); };
+
+  $('copy-link').onclick = async () => {
+    try { await navigator.clipboard.writeText($('direct').value); } catch { $('direct').select(); document.execCommand('copy'); }
+    const s = $('copy-link').querySelector('span'); s.textContent = 'Copied'; setTimeout(() => s.textContent = 'Copy', 1500);
+  };
+
+  // Server status from the health check (a failed or slow call reads as offline).
+  fetch('/health').then(r => r.ok).catch(() => false).then(ok => {
+    for (const p of ['b', 'f']) {
+      $(p + '-dot').className = 'dot ' + (ok ? 'on' : 'off'); $(p + '-status').textContent = ok ? 'Online' : 'Offline';
+    }
+  });
+
+  // Install checklist: tap a number to tick it; remembered on this device.
+  const steps = [...document.querySelectorAll('.step')];
+  const saved = new Set(JSON.parse(localStorage.getItem('kns_steps') || '[]'));
+  function paint() {
+    steps.forEach(s => s.classList.toggle('done', saved.has(s.dataset.step)));
+    $('count').textContent = saved.size === 4 ? 'All 4 steps done' : `Step ${saved.size + 1} of 4`;
+    if (saved.size === 0) $('count').textContent = 'Step 1 of 4';
+    $('fill').style.width = saved.size * 25 + '%';
+    localStorage.setItem('kns_steps', JSON.stringify([...saved]));
+  }
+  steps.forEach(s => s.querySelector('.n').onclick = () => { const k = s.dataset.step; saved.has(k) ? saved.delete(k) : saved.add(k); paint(); });
+  paint();
+
+  const seen = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); seen.unobserve(e.target); } }), { threshold: .1 });
+  document.querySelectorAll('.reveal').forEach(s => seen.observe(s));
+</script>
+</body>
+</html>

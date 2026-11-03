@@ -1,0 +1,6 @@
+capstone==5.0.7
+pyelftools>=0.31
+pycryptodome>=3.20   # AES for c2s_crypto + decrypt_dt
+
+# Dynamic capture (machine with a device/emulator only):
+frida-tools>=12
